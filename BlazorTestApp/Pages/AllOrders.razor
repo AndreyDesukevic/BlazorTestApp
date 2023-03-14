@@ -1,0 +1,50 @@
+﻿@inject BlazorTestApp.DAL.Repositories.BaseRepository<Order> repository
+
+@page "/allOrders"
+@using BlazorTestApp.DAL.DbModels;
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h2> All orders</h2>
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Id Order</th>
+                        <th scope="col">Client</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">OrderData</th>
+                        <th scope="col">OrderStatus</th>
+                        <th scope="col">Cost</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+                @foreach (var item in orders)
+                {
+                    <tbody>
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Client?.FirstName @item.Client?.LastName </td>
+                            <td>@item.Description</td>
+                            <td>@item.OrderData</td>
+                            <td>@item.OrderStatus</td>
+                            <td>@item.Cost</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+@code {
+    private IEnumerable<Order> orders = new List<Order>();
+
+    protected override void OnInitialized()
+    {
+        orders = repository.GetAll();
+    }
+}

@@ -10,7 +10,7 @@ namespace BlazorTestApp.DAL.DbModels
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public DateTime DateCreate { get; set; }
+        public DateTime DateCreate { get; set; }=DateTime.Now;
         public ClientStatus ClientStatus { get; set; }
         public List<Order>? Orders { get; set; }
         public string? Description { get; set; }

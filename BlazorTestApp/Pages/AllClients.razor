@@ -1,0 +1,45 @@
+﻿@inject BlazorTestApp.DAL.Repositories.BaseRepository<Client> repository
+
+@page "/allClients"
+@using BlazorTestApp.DAL.DbModels;
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+
+            <h2> All clients</h2>
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Id Client</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Create Data</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                @foreach (var item in clients)
+                {
+                    <tbody>
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.FirstName @item.LastName </td>
+                            <td>@item.Description</td>
+                            <td>@item.DateCreate</td>
+                            <td>@item.ClientStatus</td>
+                        </tr>
+                    </tbody>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+@code {
+    private IEnumerable<Client> clients = new List<Client>();
+
+    protected override void OnInitialized()
+    {
+        clients = repository.GetAll();
+    }
+}

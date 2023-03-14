@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlazorTestApp.DAL\BlazorTestApp.DAL.csproj" />
-    <ProjectReference Include="..\BlazorTestApp.Service\BlazorTestApp.Service.csproj" />
   </ItemGroup>
 
 </Project>
