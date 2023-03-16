@@ -12,8 +12,8 @@ string connection = builder.Configuration.GetConnectionString("DefaultConnection
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<WebDbContext>(options => options.UseSqlServer(connection));
-builder.Services.AddScoped<BaseRepository<Client>,ClientRepository>();
-builder.Services.AddScoped<BaseRepository<Order>, OrderRepository>();
+builder.Services.AddScoped<IBaseRepository<Client>,ClientRepository>();
+builder.Services.AddScoped<IBaseRepository<Order>,OrderRepository>();
 
 
 

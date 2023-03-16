@@ -9,6 +9,7 @@ namespace BlazorTestApp.DAL.DbModels
 {
     public class Order:BaseModel
     { 
+        public int ClientId { get; set; }
         public Client? Client { get; set; }
         public string? Description { get; set; }
         public DateTime OrderData { get; set; }

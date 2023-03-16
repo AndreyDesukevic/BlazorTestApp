@@ -20,9 +20,10 @@ namespace BlazorTestApp.DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Client>()
-               .HasMany(client => client.Orders)
-               .WithOne(order => order.Client);
+            modelBuilder.Entity<Order>()
+             .HasOne(order => order.Client)
+             .WithMany(client => client.Orders)
+             .HasForeignKey(order => order.ClientId);
 
             modelBuilder.Entity<Order>()
                .Property(x => x.Cost)
