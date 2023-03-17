@@ -1,13 +1,21 @@
-using BlazorTestApp.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using BlazorTestApp.DAL;
+using Microsoft.EntityFrameworkCore;
+using BlazorTestApp.DAL.Repositories;
+using BlazorTestApp.DAL.DbModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddDbContext<WebDbContext>(options => options.UseSqlServer(connection));
+builder.Services.AddScoped<IBaseRepository<Client>,ClientRepository>();
+builder.Services.AddScoped<IBaseRepository<Order>,OrderRepository>();
+
+
 
 var app = builder.Build();
 

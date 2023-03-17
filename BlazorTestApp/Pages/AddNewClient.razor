@@ -1,0 +1,59 @@
+﻿@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Client> clientRepository
+
+@page "/addNewClient"
+
+<br />
+<h3>AddNewClient</h3>
+<br />
+<br />
+<EditForm Model="@_client" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <ImputComponent Label="First Name">
+        <Control>
+            <input type="text" @bind-value="_client.FirstName" placeholder="First Name" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+        </Control>
+    </ImputComponent>
+    <ImputComponent Label="First Name">
+        <Control>
+            <input type="text" @bind-value="_client.LastName" placeholder="First Name" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+        </Control>
+    </ImputComponent>
+    <ImputComponent Label="Description">
+        <Control>
+            <input type="text" @bind-value="_client.Description" placeholder="Description" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+        </Control>
+    </ImputComponent>
+
+    <button class="btn btn-success" type="submit">Add</button>
+</EditForm>
+@if(messageIsValid)
+{
+<h3>Пользователь успешно добавлен!</h3>
+
+}
+
+
+@code {
+    private bool messageIsValid = false;
+    private Client _client = new();
+
+
+
+    private void HandleValidSubmit()
+    {
+        _client.ClientStatus = ClientStatus.Potential;
+        _client.DateCreate = DateTime.Now;
+
+        clientRepository.Create(_client);
+
+        _client.FirstName = string.Empty;
+        _client.LastName = string.Empty;
+        _client.Description = string.Empty;
+
+        messageIsValid = true;
+        System.Threading.Thread.Sleep(3000);
+        messageIsValid = false;
+        ShouldRender();
+    }
+}

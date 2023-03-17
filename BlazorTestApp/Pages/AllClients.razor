@@ -1,0 +1,36 @@
+﻿@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Client> clientRepository
+@page "/allClients"
+@using BlazorTestApp.DAL.DbModels
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h2> All clients</h2>
+            <TableComponent Items="_clients.ToList()" Context="client">
+                <TableHeader>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Create Data</th>
+                    <th>Status</th>
+                </TableHeader>
+                <RowTemplate>
+                    <td>@client.Id</td>
+                    <td><a href="/client/@client.Id"> @client.FirstName @client.LastName</a></td>
+                    <td>@client.Description</td>
+                    <td>@client.DateCreate</td>
+                    <td>@client.ClientStatus</td>
+                </RowTemplate>
+            </TableComponent>
+        </div>
+    </div>
+</div>
+@code {
+    private IEnumerable <Client> _clients = new List<Client>();
+
+    protected override void OnInitialized()
+    {
+        _clients=clientRepository.GetAll();
+    }
+}

@@ -1,0 +1,109 @@
+﻿@page "/client/{clientId:int}"
+@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Client> clientRepository
+@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Order> orderRepository
+
+@using BlazorTestApp.DAL.DbModels;
+<div class="container-fluid">
+    <div class="row">
+        <div class="col bg-dark text-white text-center">
+            <h2>@_client.FirstName  @_client.LastName</h2>
+        </div>
+    </div>
+    <br />
+    <div class="row border rounded">
+        <br />
+        <div class="col">
+            <div>
+                Description:
+            </div>
+            <div>
+                @_client.Description
+            </div>
+        </div>
+        <div class="col border-left">
+            <div>
+                Create Data: @_client.DateCreate
+            </div>
+            <div>
+                Status:@_client.ClientStatus
+            </div>
+        </div>
+        <div class="col border-left">
+            <div>
+                <td><button class="btn btn-info">Edit Client</button></td>
+            </div>
+            <div>
+                <button class="btn btn-danger" @onclick="(()=>DeleteClient(_client))">Delete Client</button>
+            </div>
+        </div>
+        <br />
+        <br />
+        <br />
+    </div>
+
+    <div class="row">
+        <br />
+        <button class="btn btn-success" @onclick="(()=>AddNewOrder(_client))">Add New Order</button>
+        <br />
+    </div>
+    @if (_client.Orders.Count > 0)
+    {
+        <div class="row">
+            <div class="col bg-dark text-white text-center">
+                <h3>Orders:</h3>
+            </div>
+            <div class="col">
+                <TableComponent Items="_client.Orders" Context="order">
+                    <TableHeader>
+                        <th>Id Order</th>
+                        <th>Description</th>
+                        <th>Order Data</th>
+                        <th>Order Status</th>
+                        <th>Cost</th>
+                        <th></th>
+                        <th></th>
+                    </TableHeader>
+                    <RowTemplate>
+                        <td>@order.Id</td>
+                        <td>@order.Description</td>
+                        <td>@order.OrderData</td>
+                        <td>@order.OrderStatus</td>
+                        <td>@order.Cost</td>
+                        <td><button class="btn btn-info">Edit</button></td>
+                        <td><button class="btn btn-danger" @onclick="(()=>DeleteOrder(order))">Delete</button></td>
+                    </RowTemplate>
+                </TableComponent>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <h3>No orders</h3>
+        </div>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    private Client _client = new Client();
+
+    protected override void OnInitialized()
+    {
+        _client = clientRepository.GetAll().FirstOrDefault(x => x.Id == ClientId);
+    }
+    private void DeleteOrder(Order order)
+    {
+        orderRepository.Delete(order);
+    }
+    private void DeleteClient(Client client)
+    {
+
+    }
+    private void AddNewOrder(Client client)
+    {
+
+    }
+}

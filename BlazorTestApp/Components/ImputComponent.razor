@@ -1,0 +1,12 @@
+﻿
+<div class="input-group input-group-sm mb-3">
+    <span class="input-group-text" id="inputGroup-sizing-sm">@Label</span>
+   @Control
+</div>
+@code {
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public RenderFragment Control { get; set; }
+}
