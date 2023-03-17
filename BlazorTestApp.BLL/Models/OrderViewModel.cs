@@ -6,16 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlazorTestApp.DAL.DbModels
+namespace BlazorTestApp.BLL.Models
 {
-    public class Order:BaseModel
-    { 
+    public class OrderViewModel
+    {
+        public int Id { get; set; }
         public int ClientId { get; set; }
-        public Client? Client { get; set; }
+        public string? NameClient { get; set; }
         public string? Description { get; set; }
-        public DateTime OrderData { get; set; }
         public int Cost { get; set; }
+        public DateTime OrderData { get; set; }
         public OrderStatus OrderStatus { get; set; }
-       
     }
 }

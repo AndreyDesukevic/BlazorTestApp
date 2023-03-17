@@ -35,6 +35,11 @@ namespace BlazorTestApp.DAL.Repositories
             return _webDbContext.Clients.Include(x => x.Orders);
         }
 
+        public Client GetById(int id)
+        {
+            return GetAll().FirstOrDefault(x => x.Id == id);
+        }
+
         public Client Update(Client entity)
         {
             _webDbContext.Clients.Update(entity);

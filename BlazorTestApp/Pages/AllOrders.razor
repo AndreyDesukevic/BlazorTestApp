@@ -1,4 +1,4 @@
-﻿@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Order> orderRepository
+﻿@inject IOrderService orderService
 
 @page "/allOrders"
 
@@ -21,13 +21,13 @@
                 </TableHeader>
                 <RowTemplate>
                     <td>@order.Id</td>
-                    <td>@order.Client?.FirstName @order.Client?.LastName</td>
+                    <td>@order.NameClient</td>
                     <td>@order.Description</td>
                     <td>@order.OrderData</td>
                     <td>@order.OrderStatus</td>
                     <td>@order.Cost</td>
                     <td><button class="btn btn-info">Edit</button></td>
-                    <td> <button class="btn btn-danger" @onclick="(()=>DeleteOrder(order))">Delete</button></td>
+                    <td> <button class="btn btn-danger" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
                 </RowTemplate>
             </TableComponent>
         </div>
@@ -35,17 +35,16 @@
 </div>
 
 @code {
-    private IEnumerable<Order> _orders = new List<Order>();
-
+    private IEnumerable<OrderViewModel> _orders = new List<OrderViewModel>();
 
     protected override void OnInitialized()
     {
-        _orders = orderRepository.GetAll(); 
+        _orders = orderService.GetAll(); 
     }
     
-    private void DeleteOrder(Order order)
+    private void DeleteOrder(int id)
     {
-         orderRepository.Delete(order);
+         orderService.Delete(id);
     }
 
 }

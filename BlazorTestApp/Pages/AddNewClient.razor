@@ -1,4 +1,4 @@
-﻿@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Client> clientRepository
+﻿@inject IClientService clientService
 @page "/addNewClient"
 
 <br />
@@ -35,29 +35,18 @@
 
 @code {
     private bool messageIsValid=false;
-    private Client _client;
+    private ClientCreateViewModel? _client;
 
     protected override void OnInitialized()
     {
         _client = new();
     }
 
-
-
     private void HandleValidSubmit()
     {
-
-        _client.ClientStatus = ClientStatus.Potential;
-        _client.DateCreate = DateTime.Now;
-        clientRepository.Create(_client);
-
+        clientService.Create(_client);
         messageIsValid = true;
-
         OnInitialized();
-
     }
-    private void HandleSubmit()
-    {
-        messageIsValid = false;
-    }
+   
 }

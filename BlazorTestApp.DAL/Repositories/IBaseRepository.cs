@@ -12,5 +12,6 @@ namespace BlazorTestApp.DAL.Repositories
         IQueryable<T> GetAll();
         void Delete(T entity);
         T Update(T entity);
+        T GetById(int id);
     }
 }
