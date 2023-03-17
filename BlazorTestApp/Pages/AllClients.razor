@@ -1,65 +1,36 @@
 ﻿@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Client> clientRepository
-
 @page "/allClients"
-
+@using BlazorTestApp.DAL.DbModels
 
 
 <div class="container-fluid">
     <div class="row">
         <div class="col">
             <h2> All clients</h2>
-            @*<table class="table table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">Id Client</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Create Data</th>
-                        <th scope="col">Status</th>
-                    </tr>
-                </thead>
-                @foreach (var item in _clients)
-                {
-                    <tbody>
-                        <tr>
-                            <td>@item.Id</td>
-                            <td><a href="allClients/@item.Id"> @item.FirstName @item.LastName</a></td>
-                            <td>@item.Description</td>
-                            <td>@item.DateCreate</td>
-                            <td>@item.ClientStatus</td>
-                        </tr>
-                    </tbody>
-                }
-            </table>*@
-            <TableComponent Items="_clients.ToList()" Context="order">
+            <TableComponent Items="_clients.ToList()" Context="client">
                 <TableHeader>
-                    <th>Id Order</th>
-                    <th>Client</th>
+                    <th>Id</th>
+                    <th>Name</th>
                     <th>Description</th>
-                    <th>Order Data</th>
-                    <th>Order Status</th>
-                    <th>Cost</th>
-                    <th></th>
-                    <th></th>
+                    <th>Create Data</th>
+                    <th>Status</th>
                 </TableHeader>
                 <RowTemplate>
                     <td>@client.Id</td>
-                    <td>@client.FirstName @client.LastName</td>
+                    <td><a href="/client/@client.Id"> @client.FirstName @client.LastName</a></td>
                     <td>@client.Description</td>
                     <td>@client.DateCreate</td>
                     <td>@client.ClientStatus</td>
-   
                 </RowTemplate>
             </TableComponent>
         </div>
     </div>
 </div>
 @code {
-    private IEnumerable<Client> _clients;
+    private IEnumerable <Client> _clients = new List<Client>();
 
     protected override void OnInitialized()
     {
-        _clients = new List<Client>();
-        _clients = clientRepository.GetAll();
+        _clients=clientRepository.GetAll();
     }
 }

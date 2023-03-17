@@ -1,10 +1,8 @@
 ﻿@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Order> orderRepository
 
-
 @page "/allOrders"
+
 @using BlazorTestApp.DAL.DbModels;
-
-
 
 <div class="container-fluid">
     <div class="row">
@@ -23,7 +21,7 @@
                 </TableHeader>
                 <RowTemplate>
                     <td>@order.Id</td>
-                    <td>@order.Client.FirstName @order.Client.LastName</td>
+                    <td>@order.Client?.FirstName @order.Client?.LastName</td>
                     <td>@order.Description</td>
                     <td>@order.OrderData</td>
                     <td>@order.OrderStatus</td>
