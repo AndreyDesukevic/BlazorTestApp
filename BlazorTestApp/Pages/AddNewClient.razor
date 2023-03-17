@@ -1,5 +1,4 @@
 ﻿@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Client> clientRepository
-
 @page "/addNewClient"
 
 <br />
@@ -29,31 +28,36 @@
 </EditForm>
 @if(messageIsValid)
 {
-<h3>Пользователь успешно добавлен!</h3>
+    <h3>Client added successfully! </h3>
 
 }
 
 
 @code {
-    private bool messageIsValid = false;
-    private Client _client = new();
+    private bool messageIsValid=false;
+    private Client _client;
+
+    protected override void OnInitialized()
+    {
+        _client = new();
+    }
 
 
 
     private void HandleValidSubmit()
     {
+
         _client.ClientStatus = ClientStatus.Potential;
         _client.DateCreate = DateTime.Now;
-
         clientRepository.Create(_client);
 
-        _client.FirstName = string.Empty;
-        _client.LastName = string.Empty;
-        _client.Description = string.Empty;
-
         messageIsValid = true;
-        System.Threading.Thread.Sleep(3000);
+
+        OnInitialized();
+
+    }
+    private void HandleSubmit()
+    {
         messageIsValid = false;
-        ShouldRender();
     }
 }
