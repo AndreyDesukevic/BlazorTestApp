@@ -1,12 +1,12 @@
 ﻿@page "/client/{clientId:int}"
-@inject BlazorTestApp.DAL.Repositories.IBaseRepository<Order> orderRepository
+@inject IOrderService orderService
 @inject IClientService clientService
 
 @using BlazorTestApp.DAL.DbModels;
 <div class="container-fluid">
     <div class="row">
         <div class="col bg-dark text-white text-center">
-            <h2>@_client.FirstName  @_client.LastName</h2>
+            <h2>@_client.Name</h2>
         </div>
     </div>
     <br />
@@ -38,30 +38,30 @@
     </div>
     <br />
     <div class="row border rounded">
-        <EditForm Model="@_order" OnValidSubmit="@HandleValidSubmit">
+        <EditForm Model="@_orderCreate" OnValidSubmit="@HandleValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <ImputComponent Label="Description">
                 <Control>
-                    <input type="text" @bind-value="_order.Description" placeholder="Description" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                    <input type="text" @bind-value="_orderCreate.Description" placeholder="Description" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                 </Control>
             </ImputComponent>
             <ImputComponent Label="Cost">
                 <Control>
-                    <input type="text" @bind-value="_order.Cost" placeholder="Cost" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                    <input type="text" @bind-value="_orderCreate.Cost" placeholder="Cost" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                 </Control>
             </ImputComponent>
             <button class="btn btn-success" type="submit">Add</button>
         </EditForm>
     </div>
-    @if (_client.Orders.Count > 0)
+    @if (_orders.Count()>0)
     {
         <div class="row">
             <div class="text-center">
                 <h3>Orders:</h3>
             </div>
             <div>
-                <TableComponent Items="_client.Orders" Context="order">
+                <TableComponent Items="_orders.ToList()" Context="order">
                     <TableHeader>
                         <th>Id Order</th>
                         <th>Description</th>
@@ -78,7 +78,7 @@
                         <td>@order.OrderStatus</td>
                         <td>@order.Cost</td>
                         <td><button class="btn btn-info">Edit</button></td>
-                        <td><button class="btn btn-danger" @onclick="(()=>DeleteOrder(order))">Delete</button></td>
+                        <td><button class="btn btn-danger" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
                     </RowTemplate>
                 </TableComponent>
             </div>
@@ -96,29 +96,25 @@
 @code {
     [Parameter]
     public int ClientId { get; set; }
-    private Client _client = new Client();
-    private Order _order;
+    private ClientViewModel _client;
+    private IEnumerable<OrderViewModel> _orders;
+    private OrderCreateViewModel _orderCreate;
 
     protected override void OnInitialized()
     {
-        _order = new Order();
+        _orderCreate = new OrderCreateViewModel();
         _client = clientService.GetById(ClientId);
+        _orders = orderService.GetListOrdersById(_client.OrdersId);
     }
-    private void DeleteOrder(Order order)
+    private void DeleteOrder(int id)
     {
-        orderRepository.Delete(order);
+        orderService.Delete(id);
     }
     private void HandleValidSubmit()
     {
-        AddNewOrder(_client);
-    }
-    private void AddNewOrder(Client client)
-    {
-        _order.OrderData=DateTime.Now;
-        _order.OrderStatus = OrderStatus.New;
-        _client.Orders.Add(_order);
-        clientService.Save(_client);
+        _orderCreate.ClientId = ClientId;
+        orderService.Create(_orderCreate);
         OnInitialized();
     }
-    
+   
 }
