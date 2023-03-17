@@ -24,10 +24,6 @@ namespace BlazorTestApp.DAL
              .HasOne(order => order.Client)
              .WithMany(client => client.Orders)
              .HasForeignKey(order => order.ClientId);
-
-            modelBuilder.Entity<Order>()
-               .Property(x => x.Cost)
-               .HasColumnType("decimal(10,2)");
         }
     }
 }

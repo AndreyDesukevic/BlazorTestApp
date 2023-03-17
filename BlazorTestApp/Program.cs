@@ -4,6 +4,8 @@ using BlazorTestApp.DAL;
 using Microsoft.EntityFrameworkCore;
 using BlazorTestApp.DAL.Repositories;
 using BlazorTestApp.DAL.DbModels;
+using BlazorTestApp.Services.Interfaces;
+using BlazorTestApp.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<WebDbContext>(options => options.UseSqlServer(connection));
 builder.Services.AddScoped<IBaseRepository<Client>,ClientRepository>();
 builder.Services.AddScoped<IBaseRepository<Order>,OrderRepository>();
+builder.Services.AddScoped<IClientService, ClientService>();
 
 
 

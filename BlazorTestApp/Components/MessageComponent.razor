@@ -1,0 +1,22 @@
+﻿@if (display)
+{
+   <h3>@Message</h3> 
+}
+
+@code {
+    [Parameter]
+    public string Message { get; set; }
+
+    private bool display = false;
+
+    public void Show()
+    {
+        this.display = true;
+        StateHasChanged();
+    }
+    public void Close()
+    {
+        this.display = false;
+        StateHasChanged();
+    }
+}
