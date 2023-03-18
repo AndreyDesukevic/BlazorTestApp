@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col">
             <h2> All clients</h2>
-            <TableComponent Items="_clients.ToList()" Context="client">
+            <TableComponent Items="clients.ToList()" Context="client">
                 <TableHeader>
                     <th>Id</th>
                     <th>Name</th>
@@ -32,11 +32,11 @@
 @code {
     private MessageComponent? messageComponent;
     private string? messageForPopUp;
-    private IEnumerable<ClientViewModel> _clients = new List<ClientViewModel>();
+    private IEnumerable<ClientViewModel> clients = new List<ClientViewModel>();
 
     protected override void OnInitialized()
     {
-        _clients = clientService.GetAll();
+        clients = clientService.GetAll();
     }
     private void DeleteClient(int id)
     {

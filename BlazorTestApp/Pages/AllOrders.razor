@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col">
             <h2> All orders</h2>
-            <TableComponent Items="_orders.ToList()" Context="order">
+            <TableComponent Items="orders.ToList()" Context="order">
                 <TableHeader>
                     <th>Id Order</th>
                     <th>Client</th>
@@ -17,16 +17,14 @@
                     <th>Order Status</th>
                     <th>Cost</th>
                     <th></th>
-                    <th></th>
                 </TableHeader>
                 <RowTemplate>
-                    <td>@order.Id</td>
-                    <td>@order.NameClient</td>
+                    <td><a href="/order/@order.Id"> @order.Id</a></td>
+                    <td><a href="/client/@order.ClientId"> @order.NameClient</a></td>
                     <td>@order.Description</td>
                     <td>@order.OrderData</td>
                     <td>@order.OrderStatus</td>
                     <td>@order.Cost</td>
-                    <td><button class="btn btn-info">Edit</button></td>
                     <td> <button class="btn btn-danger" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
                 </RowTemplate>
             </TableComponent>
@@ -35,11 +33,11 @@
 </div>
 
 @code {
-    private IEnumerable<OrderViewModel> _orders = new List<OrderViewModel>();
+    private IEnumerable<OrderViewModel> orders = new List<OrderViewModel>();
 
     protected override void OnInitialized()
     {
-        _orders = orderService.GetAll(); 
+        orders = orderService.GetAll(); 
     }
     
     private void DeleteOrder(int id)
