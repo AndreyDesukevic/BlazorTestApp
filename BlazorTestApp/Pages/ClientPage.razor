@@ -4,64 +4,58 @@
 
 @using BlazorTestApp.DAL.DbModels;
 <div class="container-fluid">
+    <br />
     <div class="row">
-        <div class="col bg-dark text-white text-center">
-            <h2>@_client.Name</h2>
+        <div class="col p-2 bg-dark text-white text-center">
+            <h2>@client.Name</h2>
         </div>
     </div>
-    <br />
     <div class="row border rounded">
-        <br />
-        <div class="col">
+        <div class="col p-3">
             <div>
                 Description:
             </div>
             <div>
-                @_client.Description
+                @client.Description
             </div>
         </div>
-        <div class="col border-left">
+        <div class="col p-3 border-left">
             <div>
-                Create Data: @_client.DateCreate
+                Create Data: @client.DateCreate
             </div>
             <div>
-                Status:@_client.ClientStatus
-            </div>
-        </div>
-        <div class="col border-left">
-            <div>
-                <button class="btn btn-info">Edit Client</button>
+                Status:@client.ClientStatus
             </div>
         </div>
-        <br />
-        <br />
     </div>
     <br />
     <div class="row border rounded">
-        <EditForm Model="@_orderCreate" OnValidSubmit="@HandleValidSubmit">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <ImputComponent Label="Description">
-                <Control>
-                    <input type="text" @bind-value="_orderCreate.Description" placeholder="Description" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
-                </Control>
-            </ImputComponent>
-            <ImputComponent Label="Cost">
-                <Control>
-                    <input type="text" @bind-value="_orderCreate.Cost" placeholder="Cost" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
-                </Control>
-            </ImputComponent>
-            <button class="btn btn-success" type="submit">Add</button>
-        </EditForm>
+        <div class="p-3">
+            <EditForm Model="@orderCreate" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <ImputComponent Label="Description">
+                    <Control>
+                        <input type="text" @bind-value="orderCreate.Description" placeholder="Description" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                    </Control>
+                </ImputComponent>
+                <ImputComponent Label="Cost">
+                    <Control>
+                        <input type="text" @bind-value="orderCreate.Cost" placeholder="Cost" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                    </Control>
+                </ImputComponent>
+                <button class="btn btn-success" type="submit">Add</button>
+            </EditForm>
+        </div>
     </div>
-    @if (_orders.Count()>0)
+    @if (orders.Count() > 0)
     {
         <div class="row">
             <div class="text-center">
                 <h3>Orders:</h3>
             </div>
             <div>
-                <TableComponent Items="_orders.ToList()" Context="order">
+                <TableComponent Items="orders.ToList()" Context="order">
                     <TableHeader>
                         <th>Id Order</th>
                         <th>Description</th>
@@ -72,12 +66,11 @@
                         <th></th>
                     </TableHeader>
                     <RowTemplate>
-                        <td>@order.Id</td>
+                        <td><a href="/order/@order.Id"> @order.Id</a></td>
                         <td>@order.Description</td>
                         <td>@order.OrderData</td>
                         <td>@order.OrderStatus</td>
                         <td>@order.Cost</td>
-                        <td><button class="btn btn-info">Edit</button></td>
                         <td><button class="btn btn-danger" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
                     </RowTemplate>
                 </TableComponent>
@@ -96,15 +89,15 @@
 @code {
     [Parameter]
     public int ClientId { get; set; }
-    private ClientViewModel _client;
-    private IEnumerable<OrderViewModel> _orders;
-    private OrderCreateViewModel _orderCreate;
+    private ClientViewModel client;
+    private IEnumerable<OrderViewModel> orders;
+    private OrderCreateViewModel orderCreate;
 
     protected override void OnInitialized()
     {
-        _orderCreate = new OrderCreateViewModel();
-        _client = clientService.GetById(ClientId);
-        _orders = orderService.GetListOrdersById(_client.OrdersId);
+        orderCreate = new OrderCreateViewModel();
+        client = clientService.GetById(ClientId);
+        orders = orderService.GetListOrdersById(client.OrdersId);
     }
     private void DeleteOrder(int id)
     {
@@ -112,9 +105,9 @@
     }
     private void HandleValidSubmit()
     {
-        _orderCreate.ClientId = ClientId;
-        orderService.Create(_orderCreate);
+        orderCreate.ClientId = ClientId;
+        orderService.Create(orderCreate);
         OnInitialized();
     }
-   
+
 }

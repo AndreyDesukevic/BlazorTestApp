@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTestApp", "BlazorTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTestApp.DAL", "BlazorTestApp.DAL\BlazorTestApp.DAL.csproj", "{7ABC16A9-CB13-45EC-BE50-F6E36C75EA82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTestApp.BLL", "BlazorTestApp.BLL\BlazorTestApp.BLL.csproj", "{81038687-1487-484B-AED1-C3D1E44D0C8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTestApp.BLL", "BlazorTestApp.BLL\BlazorTestApp.BLL.csproj", "{81038687-1487-484B-AED1-C3D1E44D0C8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
