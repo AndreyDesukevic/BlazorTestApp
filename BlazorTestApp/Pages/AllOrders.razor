@@ -24,8 +24,8 @@
                     <td>@order.Description</td>
                     <td>@order.OrderData</td>
                     <td>@order.OrderStatus</td>
-                    <td>@order.Cost</td>
-                    <td> <button class="btn btn-danger" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
+                    <td>@order.Cost.ToString("C0",CultureInfo.CreateSpecificCulture("en-US"))</td>
+                    <td> <button class="btn btn-danger" disabled="@order.CannotDeleted" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
                 </RowTemplate>
             </TableComponent>
         </div>
@@ -44,5 +44,5 @@
     {
          orderService.Delete(id);
     }
-
+    
 }

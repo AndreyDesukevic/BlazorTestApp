@@ -21,6 +21,24 @@ namespace BlazorTestApp.BLL.Services.Implementations
             _clientRepository = clientRepository;
         }
 
+        public IEnumerable<ClientViewModel> GetAll()
+        {
+            var dbClients = _clientRepository.GetAll();
+            var viewModels = dbClients
+                .Select(dbClient => new ClientViewModel()
+                {
+                    Id = dbClient.Id,
+                    Name = string.Join(" ", new string[] { dbClient.FirstName, dbClient.LastName }),
+                    Description = dbClient.Description,
+                    OrdersId = dbClient.Orders.Select(order => order.Id).ToList(),
+                    ClientStatus = dbClient.ClientStatus,
+                    DateCreate = dbClient.DateCreate,
+                    CannotBeNotActive = IsCanBeNotActive(dbClient.Orders),
+                    CannotDeleted = IsCannotDeleted(dbClient.Orders)
+                });
+            return viewModels;
+        }
+
         public void Create(ClientCreateViewModel clientCreateViewModel)
         {
 
@@ -46,32 +64,21 @@ namespace BlazorTestApp.BLL.Services.Implementations
             return false;
         }
 
-        public IEnumerable<ClientViewModel> GetAll()
+        public void Save(ClientViewModel clientViewModel)
         {
-            var dbClients = _clientRepository.GetAll();
-            var viewModels = dbClients
-                .Select(dbClient => new ClientViewModel()
-                {
-                    Id = dbClient.Id,
-                    Name = string.Join(" ", new string[] { dbClient.FirstName, dbClient.LastName }),
-                    Description = dbClient.Description,
-                    OrdersId = dbClient.Orders.Select(x => x.Id).ToList(),
-                    ClientStatus = dbClient.ClientStatus,
-                    DateCreate = dbClient.DateCreate,
-                });
-            return viewModels;
+            var dbClient = _clientRepository.GetAll().FirstOrDefault(client=>client.Id==clientViewModel.Id);
+            dbClient.ClientStatus = clientViewModel.ClientStatus;
+            dbClient.Description = clientViewModel.Description;
+            _clientRepository.Update(dbClient);
         }
 
-        public ClientViewModel GetById(int id) => GetAll().FirstOrDefault(x => x.Id == id);
+        public ClientViewModel GetById(int id) => GetAll().FirstOrDefault(client => client.Id == id);
 
-        public ClientViewModel GetByName(string name)
-        {
-            throw new NotImplementedException();
-        }
+        public ClientViewModel GetByName(string name) => GetAll().FirstOrDefault(client => client.Name == name);
+        public static bool IsCanBeNotActive(List<Order> orders) => orders.Any(x => x.OrderStatus == OrderStatus.New);
+        public static bool IsCannotDeleted(List<Order> orders) =>orders.Count!=0 ;
 
-        public Client Save(Client client)
-        {
-            throw new NotImplementedException();
-        }
+
+
     }
 }

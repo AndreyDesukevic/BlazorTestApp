@@ -15,6 +15,8 @@ namespace BlazorTestApp.BLL.Models
         public List<int>? OrdersId { get; set; }
         public ClientStatus ClientStatus { get; set; }
         public DateTime? DateCreate { get; set; }
+        public bool CannotBeNotActive { get; set; }
+        public bool CannotDeleted { get; set; }
 
     }
 }
