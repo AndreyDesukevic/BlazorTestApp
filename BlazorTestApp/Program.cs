@@ -6,6 +6,7 @@ using BlazorTestApp.DAL.Repositories;
 using BlazorTestApp.DAL.DbModels;
 using BlazorTestApp.BLL.Services.Implementations;
 using BlazorTestApp.BLL.Services.Interfaces;
+using AutoMapper;
 
 
 var builder = WebApplication.CreateBuilder(args);

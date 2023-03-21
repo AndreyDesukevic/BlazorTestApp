@@ -15,7 +15,7 @@ namespace BlazorTestApp.BLL.Services.Interfaces
         ClientViewModel GetByName(string name);
         bool Delete(int id);
         void Create(ClientCreateViewModel clientCreateViewModel);
-        Client Save(Client client);
+        void Save(ClientViewModel clientViewModel);
 
     }
 }

@@ -6,81 +6,102 @@
 <div class="container-fluid">
     <br />
     <div class="row">
-        <div class="col p-2 bg-dark text-white text-center">
+        <div class="col p-2 bg-dark text-white text-center border rounded-top">
             <h2>@client.Name</h2>
         </div>
     </div>
-    <div class="row border rounded">
-        <div class="col p-3">
-            <div>
-                Description:
+    <EditForm Model="@client" OnValidSubmit="@ChangeDescriptionAndStatusClient">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="row border rounded">
+            <div class="col p-3">
+                <div>
+                    Description:
+                </div>
+                <div>
+                    <InputTextArea class="form-control" rows="3" @bind-Value="@client.Description" />
+                </div>
             </div>
-            <div>
-                @client.Description
+            <div class="col p-3 border-left">
+                <div>
+                    Create Data: @client.DateCreate
+                </div>
+                <div>
+                    Status:
+                    <InputSelect class="form-control" @bind-Value="@client.ClientStatus">
+                        <option value="@ClientStatus.Potential">Potential</option>
+                        <option value="@ClientStatus.Active">Active</option>
+                        <option disabled="@client.CannotBeNotActive" value="@ClientStatus.NotActive">Not active</option>
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="p-3">
+                <button class="btn btn-success" type="submit">Save</button>
             </div>
         </div>
-        <div class="col p-3 border-left">
-            <div>
-                Create Data: @client.DateCreate
-            </div>
-            <div>
-                Status:@client.ClientStatus
-            </div>
-        </div>
-    </div>
+    </EditForm>
     <br />
-    <div class="row border rounded">
-        <div class="p-3">
-            <EditForm Model="@orderCreate" OnValidSubmit="@HandleValidSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-                <ImputComponent Label="Description">
-                    <Control>
-                        <input type="text" @bind-value="orderCreate.Description" placeholder="Description" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
-                    </Control>
-                </ImputComponent>
-                <ImputComponent Label="Cost">
-                    <Control>
-                        <input type="text" @bind-value="orderCreate.Cost" placeholder="Cost" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
-                    </Control>
-                </ImputComponent>
-                <button class="btn btn-success" type="submit">Add</button>
-            </EditForm>
-        </div>
-    </div>
-    @if (orders.Count() > 0)
+    @if (client.ClientStatus == ClientStatus.Active)
     {
-        <div class="row">
-            <div class="text-center">
-                <h3>Orders:</h3>
-            </div>
-            <div>
-                <TableComponent Items="orders.ToList()" Context="order">
-                    <TableHeader>
-                        <th>Id Order</th>
-                        <th>Description</th>
-                        <th>Order Data</th>
-                        <th>Order Status</th>
-                        <th>Cost</th>
-                        <th></th>
-                        <th></th>
-                    </TableHeader>
-                    <RowTemplate>
-                        <td><a href="/order/@order.Id"> @order.Id</a></td>
-                        <td>@order.Description</td>
-                        <td>@order.OrderData</td>
-                        <td>@order.OrderStatus</td>
-                        <td>@order.Cost</td>
-                        <td><button class="btn btn-danger" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
-                    </RowTemplate>
-                </TableComponent>
+        <div class="row border rounded">
+            <div class="p-3">
+                <EditForm Model="@orderCreate" OnValidSubmit="@CreateOrder">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <ImputComponent Label="Description">
+                        <Control>
+                            <input type="text" @bind-value="orderCreate.Description" placeholder="Description" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                        </Control>
+                    </ImputComponent>
+                    <ImputComponent Label="Cost">
+                        <Control>
+                            <input type="text" @bind-value="orderCreate.Cost" placeholder="Cost" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                        </Control>
+                    </ImputComponent>
+                    <button class="btn btn-success" type="submit">Add</button>
+                </EditForm>
             </div>
         </div>
+        @if (orders.Count() > 0)
+        {
+            <div class="row">
+                <div class="text-center">
+                    <h3>Orders:</h3>
+                </div>
+                <div>
+                    <TableComponent Items="orders.ToList()" Context="order">
+                        <TableHeader>
+                            <th>Id Order</th>
+                            <th>Description</th>
+                            <th>Order Data</th>
+                            <th>Order Status</th>
+                            <th>Cost</th>
+                            <th></th>
+                            <th></th>
+                        </TableHeader>
+                        <RowTemplate>
+                            <td><a href="/order/@order.Id"> @order.Id</a></td>
+                            <td>@order.Description</td>
+                            <td>@order.OrderData</td>
+                            <td>@order.OrderStatus</td>
+                            <td>@order.Cost.ToString("C0",CultureInfo.CreateSpecificCulture("en-US"))</td>
+                            <td><button class="btn btn-danger" disabled="@order.CannotDeleted" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
+                        </RowTemplate>
+                    </TableComponent>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row p-3 text-center">
+                <h3>No orders</h3>
+            </div>
+        }
     }
     else
     {
-        <div class="row">
-            <h3>No orders</h3>
+        <div>
+            <h2>Order can be created for clients in active status.</h2>
         </div>
     }
 </div>
@@ -103,11 +124,15 @@
     {
         orderService.Delete(id);
     }
-    private void HandleValidSubmit()
+    private void CreateOrder()
     {
         orderCreate.ClientId = ClientId;
         orderService.Create(orderCreate);
         OnInitialized();
+    }
+    private void ChangeDescriptionAndStatusClient()
+    {
+        clientService.Save(client);
     }
 
 }

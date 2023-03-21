@@ -14,7 +14,7 @@ namespace BlazorTestApp.BLL.Services.Interfaces
         OrderViewModel GetById(int id);
         void Delete(int id);
         void Create(OrderCreateViewModel orderCreateViewModel);
-        void Save(Order order);
+        void Save(OrderViewModel orderViewModel);
         IEnumerable<OrderViewModel> GetListOrdersById(List<int> ids);
     }
 }

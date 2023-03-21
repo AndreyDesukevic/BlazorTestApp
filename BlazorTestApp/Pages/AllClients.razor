@@ -22,7 +22,7 @@
                     <td>@client.Description</td>
                     <td>@client.DateCreate</td>
                     <td>@client.ClientStatus</td>
-                    <td><button class="btn btn-danger" @onclick="(()=>DeleteClient(client.Id))">Delete Client</button></td>
+                    <td><button class="btn btn-danger" disabled="@client.CannotDeleted" @onclick="(()=>DeleteClient(client.Id))">Delete Client</button></td>
                 </RowTemplate>
             </TableComponent>
         </div>

@@ -22,18 +22,33 @@
     </div>
     <br />
     <div class="row p-2 border rounded">
-        <div class="col">
-            Description: @order.Description
-        </div>
-        <div class="col">
-            Order status: @order.OrderStatus
-        </div>
+        <EditForm Model="@order" OnValidSubmit="@ChangeDescriptionAndStatusOrder">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <br />
+            <div >
+                Description:
+                <InputTextArea class="form-control" rows="3" @bind-Value="@order.Description" />
+            </div>
+            <br />
+            <div>
+                Status:
+                <InputSelect class="form-control" @bind-Value="@order.OrderStatus">
+                    <option value="@OrderStatus.New">New</option>
+                    <option value="@OrderStatus.Done">Done</option>
+                </InputSelect>
+            </div>
+            <br />
+            <button class="btn btn-success" type="submit">Save</button>
+        </EditForm>
+        <br />
     </div>
     <br />
     <div class="row p-1 border-top">
-        <h3>Cost: @order.Cost</h3>
+        <h3>Cost: @order.Cost.ToString("C0",CultureInfo.CreateSpecificCulture("en-US"))</h3>
     </div>
 </div>
+
 
 @code {
     [Parameter]
@@ -42,5 +57,9 @@
     protected override void OnInitialized()
     {
         order = orderService.GetById(OrderId);
+    }
+    private void ChangeDescriptionAndStatusOrder()
+    {
+        orderService.Save(order);
     }
 }

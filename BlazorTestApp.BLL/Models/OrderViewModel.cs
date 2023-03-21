@@ -17,5 +17,6 @@ namespace BlazorTestApp.BLL.Models
         public int Cost { get; set; }
         public DateTime OrderData { get; set; }
         public OrderStatus OrderStatus { get; set; }
+        public bool CannotDeleted { get; set; }
     }
 }
