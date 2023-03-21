@@ -75,8 +75,8 @@ namespace BlazorTestApp.BLL.Services.Implementations
         public ClientViewModel GetById(int id) => GetAll().FirstOrDefault(client => client.Id == id);
 
         public ClientViewModel GetByName(string name) => GetAll().FirstOrDefault(client => client.Name == name);
-        public static bool IsCanBeNotActive(List<Order> orders) => orders.Any(x => x.OrderStatus == OrderStatus.New);
-        public static bool IsCannotDeleted(List<Order> orders) =>orders.Count!=0 ;
+        private static bool IsCanBeNotActive(List<Order> orders) => orders.Any(x => x.OrderStatus == OrderStatus.New);
+        private static bool IsCannotDeleted(List<Order> orders) =>orders.Count!=0 ;
 
 
 

@@ -7,7 +7,10 @@ using BlazorTestApp.DAL.DbModels;
 using BlazorTestApp.BLL.Services.Implementations;
 using BlazorTestApp.BLL.Services.Interfaces;
 using AutoMapper;
-
+using BlazorTestApp.BLL.Search.Interfaces;
+using BlazorTestApp.BLL.Search.Implementations;
+using BlazorTestApp.BLL.Sorting.Implementations;
+using BlazorTestApp.BLL.Sorting.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,8 @@ builder.Services.AddScoped<IBaseRepository<Client>,ClientRepository>();
 builder.Services.AddScoped<IBaseRepository<Order>,OrderRepository>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ISearchOrder, SearchOrder>();
+builder.Services.AddScoped<ISortingOrder,SortingOrder>();
 
 
 

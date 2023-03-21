@@ -1,0 +1,19 @@
+﻿<select class="form-control" @onchange="ApplySort">
+    <option value="-1">Sort by</option>
+    <option value="NameClient">Name</option>
+    <option value="NameClient desc">Name DESC</option>
+    <option value="OrderData">Date</option>
+    <option value="OrderData desc">Date DESC</option>
+    <option value="Cost">Cost</option>
+    <option value="Cost desc">Cost DESC</option>
+</select>
+@code {
+    [Parameter]
+    public EventCallback<string> OnSortChanged { get; set; }
+    private void ApplySort(ChangeEventArgs eventArgs)
+    {
+        if (eventArgs.Value.ToString() == "-1")
+            return;
+        OnSortChanged.InvokeAsync(eventArgs.Value.ToString());
+    }
+}
