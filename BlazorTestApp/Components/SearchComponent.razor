@@ -1,0 +1,14 @@
+﻿<div>
+    <input @bind="searchTerm" @bind:event="oninput" @onkeyup="HandleSearch" class="form-control"  type="text" placeholder="@Label" />
+</div>
+@code {
+    [Parameter]
+    public string Label { get; set; }
+    [Parameter]
+    public EventCallback<string> OnSearch { get; set; }
+    private string searchTerm;
+    private void HandleSearch()
+    {
+        OnSearch.InvokeAsync(searchTerm);
+    }
+}

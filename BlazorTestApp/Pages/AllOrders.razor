@@ -1,13 +1,23 @@
 ﻿@inject IOrderService orderService
+@inject ISearchOrder searchOrder
+@inject ISortingOrder sortingOrder
 
 @page "/allOrders"
 
 @using BlazorTestApp.DAL.DbModels;
 
 <div class="container-fluid">
+    <h2> All orders</h2>
+    <div class="row p-2">
+        <div class="col">
+            <SearchComponent Label="Search order by Name" OnSearch="HandleSearch"></SearchComponent>
+        </div>
+        <div class="col">
+            <SortComponent OnSortChanged="SortChanged"> </SortComponent>
+        </div>
+    </div>
     <div class="row">
         <div class="col">
-            <h2> All orders</h2>
             <TableComponent Items="orders.ToList()" Context="order">
                 <TableHeader>
                     <th>Id Order</th>
@@ -39,10 +49,17 @@
     {
         orders = orderService.GetAll(); 
     }
-    
+
     private void DeleteOrder(int id)
     {
-         orderService.Delete(id);
+        orderService.Delete(id);
     }
-    
+    private void HandleSearch(string searchTerm)
+    {
+        orders=searchOrder.SearchByName(searchTerm);
+    }
+    private void SortChanged(string orderBy)
+    {
+        orders = sortingOrder.Sort(orderBy);
+    }
 }
