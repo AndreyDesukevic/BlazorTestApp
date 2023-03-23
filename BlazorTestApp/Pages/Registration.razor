@@ -1,0 +1,91 @@
+﻿@page "/registration"
+@inject IUserService userService
+@inject IJSRuntime js
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+
+<h3>Registration</h3>
+@if (ShowRegistrationErrors)
+{
+    <div class="alert alert-danger" role="alert">
+        <p>@errorsExist</p> 
+    </div>
+}
+<EditForm Model="userCreate" OnValidSubmit="Register" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+    <div class="form-group row p-1">
+        <label for="email" class="col-md-2 col-form-label">Name:</label>
+        <div class="col-md-10">
+            <InputText id="email" class="form-control" @bind-Value="userCreate.Name" />
+            <ValidationMessage For="@(() => userCreate.Name)" />
+        </div>
+    </div>
+    <div class="form-group row p-1">
+        <label for="email" class="col-md-2 col-form-label">Email:</label>
+        <div class="col-md-10">
+            <InputText id="email" class="form-control" @bind-Value="userCreate.Email" />
+            <ValidationMessage For="@(() => userCreate.Email)" />
+        </div>
+    </div>
+    <div class="form-group row p-1">
+        <label for="password" class="col-md-2 col-form-label">Password:</label>
+        <div class="col-md-10">
+            <InputText type="password" id="password" class="form-control" @bind-Value="userCreate.Password" />
+            <ValidationMessage For="@(() => userCreate.Password)" />
+        </div>
+    </div>
+    <div class="form-group row p-1">
+        <label for="confirm" class="col-md-2 col-form-label">Confirm Password:</label>
+        <div class="col-md-10">
+            <InputText type="password" id="confirm" class="form-control" @bind-Value="userCreate.ConfirmPassword" />
+            <ValidationMessage For="@(() => userCreate.ConfirmPassword)" />
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success">Register</button>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    private UserCreateViewModel userCreate = new UserCreateViewModel();
+    public bool ShowRegistrationErrors { get; set; }
+    private string errorsExist = "User with this name exists";
+
+
+    private async Task Register()
+    {
+        ShowRegistrationErrors = false;
+        var dbUser = userService.GetByUserName(userCreate.Name);
+        if (dbUser == null)
+        {
+            userService.Create(userCreate);
+            Login();
+        }
+        else
+        {
+            ShowRegistrationErrors = true;
+        }
+        
+    }
+    private async Task Login()
+    {
+        var user = userService.GetByUserName(userCreate.Name);
+        if (user == null || user.Password != userCreate.Password)
+        {
+            await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
+            return;
+        }
+
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationStateAsync(new UserSession
+            {
+                UserName = user.Name,
+                Role = user.Role.ToString()
+            });
+        navManager.NavigateTo("/", true);
+    }
+
+}
