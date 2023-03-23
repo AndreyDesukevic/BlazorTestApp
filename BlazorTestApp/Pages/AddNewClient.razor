@@ -1,5 +1,6 @@
 ﻿@inject IClientService clientService
 @page "/addNewClient"
+@attribute [Authorize(Roles = "Administrator") ]
 
 <br />
 <h3>AddNewClient</h3>
