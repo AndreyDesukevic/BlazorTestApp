@@ -34,7 +34,8 @@
     private async Task Authenticate()
     {
         var user = userService.GetByUserName(userLogin.Name);
-        if(user==null|| user.Password!=userLogin.Password)
+        var hashPassword = HashPasswordHelper.HashPassword(userLogin.Password);
+        if(user==null|| user.Password!=hashPassword)
         {
             await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
             return;
