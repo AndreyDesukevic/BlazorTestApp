@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlazorTestApp.DAL.DbModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,7 @@ namespace BlazorTestApp.DAL.Repositories
         void Delete(T entity);
         T Update(T entity);
         T GetById(int id);
+        IQueryable<T> GetHistoryById(int id);
+        
     }
 }

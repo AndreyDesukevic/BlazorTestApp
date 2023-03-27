@@ -15,5 +15,7 @@ namespace BlazorTestApp.DAL.DbModels
         public string Password { get; set; }
         public UserRole Role { get; set; }  
         public bool IsBlocked { get; set; }
+        public List<Client> ChangedClients { get; set; }
+        public List<Order> ChangedOrders { get; set; }
     }
 }

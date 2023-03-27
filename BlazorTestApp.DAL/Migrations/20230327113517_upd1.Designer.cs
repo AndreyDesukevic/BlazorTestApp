@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorTestApp.DAL.Migrations
 {
     [DbContext(typeof(WebDbContext))]
-    [Migration("20230323015206_updUs")]
-    partial class updUs
+    [Migration("20230327113517_upd1")]
+    partial class upd1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,8 +35,18 @@ namespace BlazorTestApp.DAL.Migrations
                     b.Property<int>("ClientStatus")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
                     b.Property<DateTime>("DateCreate")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DeletedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletedAt");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -47,9 +57,27 @@ namespace BlazorTestApp.DAL.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NameUserMadeChange")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.HasIndex("NameUserMadeChange");
+
+                    b.ToTable("Clients", (string)null);
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                        {
+                            ttb.UseHistoryTable("ClientDataHistory");
+                            ttb
+                                .HasPeriodStart("CreatedAt")
+                                .HasColumnName("CreatedAt");
+                            ttb
+                                .HasPeriodEnd("DeletedAt")
+                                .HasColumnName("DeletedAt");
+                        }
+                    ));
                 });
 
             modelBuilder.Entity("BlazorTestApp.DAL.DbModels.Order", b =>
@@ -66,8 +94,22 @@ namespace BlazorTestApp.DAL.Migrations
                     b.Property<int>("Cost")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<DateTime>("DeletedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletedAt");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameUserMadeChangeOrder")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("OrderData")
                         .HasColumnType("datetime2");
@@ -79,7 +121,21 @@ namespace BlazorTestApp.DAL.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Orders");
+                    b.HasIndex("NameUserMadeChangeOrder");
+
+                    b.ToTable("Orders", (string)null);
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                        {
+                            ttb.UseHistoryTable("OrderDataHistory");
+                            ttb
+                                .HasPeriodStart("CreatedAt")
+                                .HasColumnName("CreatedAt");
+                            ttb
+                                .HasPeriodEnd("DeletedAt")
+                                .HasColumnName("DeletedAt");
+                        }
+                    ));
                 });
 
             modelBuilder.Entity("BlazorTestApp.DAL.DbModels.User", b =>
@@ -125,20 +181,46 @@ namespace BlazorTestApp.DAL.Migrations
                         });
                 });
 
+            modelBuilder.Entity("BlazorTestApp.DAL.DbModels.Client", b =>
+                {
+                    b.HasOne("BlazorTestApp.DAL.DbModels.User", "User")
+                        .WithMany("ChangedClients")
+                        .HasForeignKey("NameUserMadeChange")
+                        .HasPrincipalKey("Name")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BlazorTestApp.DAL.DbModels.Order", b =>
                 {
                     b.HasOne("BlazorTestApp.DAL.DbModels.Client", "Client")
                         .WithMany("Orders")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlazorTestApp.DAL.DbModels.User", "User")
+                        .WithMany("ChangedOrders")
+                        .HasForeignKey("NameUserMadeChangeOrder")
+                        .HasPrincipalKey("Name")
                         .IsRequired();
 
                     b.Navigation("Client");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BlazorTestApp.DAL.DbModels.Client", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("BlazorTestApp.DAL.DbModels.User", b =>
+                {
+                    b.Navigation("ChangedClients");
+
+                    b.Navigation("ChangedOrders");
                 });
 #pragma warning restore 612, 618
         }

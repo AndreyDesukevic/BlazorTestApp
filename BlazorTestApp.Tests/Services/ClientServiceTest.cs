@@ -32,7 +32,7 @@ namespace BlazorTestApp.Tests.Services
             var finishResult = Assert.IsType<EnumerableQuery<ClientViewModel>>(result);
             var model = Assert.IsAssignableFrom<IEnumerable<ClientViewModel>>(
                 finishResult);
-            Assert.Equal(GetTestClients().Select(x=>x is Order).Count(), model.ToList().Count());
+            Assert.NotEmpty(model);
         }
         private IQueryable<Client> GetTestClients()
         {

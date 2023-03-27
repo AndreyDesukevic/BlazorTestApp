@@ -15,6 +15,8 @@ namespace BlazorTestApp.DAL.DbModels
         public ClientStatus ClientStatus { get; set; }
         public List<Order> Orders { get; set; }
         public string? Description { get; set; }
+        public string NameUserMadeChange { get; set; }
+        public User User { get; set; }  
        
     }
 }

@@ -61,6 +61,8 @@
         var dbUser = userService.GetByUserName(userCreate.Name);
         if (dbUser == null)
         {
+            var hashPassword = HashPasswordHelper.HashPassword(userCreate.Password);
+            userCreate.Password = hashPassword;
             userService.Create(userCreate);
             Login();
         }

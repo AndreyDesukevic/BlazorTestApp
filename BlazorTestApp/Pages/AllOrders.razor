@@ -1,4 +1,5 @@
 ﻿@inject IOrderService orderService
+@inject IUserService userService
 @inject ISearchOrder searchOrder
 @inject ISortingOrder sortingOrder
 
@@ -35,7 +36,7 @@
                     <td>@order.OrderData</td>
                     <td>@order.OrderStatus</td>
                     <td>@order.Cost.ToString("C0",CultureInfo.CreateSpecificCulture("en-US"))</td>
-                    <td> <button class="btn btn-danger" disabled="@order.CannotDeleted" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
+                    <td> <button class="btn btn-danger" disabled="@order.CannotDeleted" @onclick="(()=>DeleteOrder(order.Id,currentUser.Name))">Delete</button></td>
                 </RowTemplate>
             </TableComponent>
         </div>
@@ -44,15 +45,26 @@
 
 @code {
     private IEnumerable<OrderViewModel> orders = new List<OrderViewModel>();
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+    private UserViewModel? currentUser;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await GetCurrentUser();
         orders = orderService.GetAll(); 
     }
 
-    private void DeleteOrder(int id)
+    private async Task GetCurrentUser()
     {
-        orderService.Delete(id);
+        var authState = await authenticationState;
+        var authUserName = authState.User.Identity.Name;
+        currentUser = userService.GetByUserName(authUserName);
+    }
+
+    private void DeleteOrder(int idOrder,string currentUserName)
+    {
+        orderService.Delete(idOrder, currentUserName);
     }
     private void HandleSearch(string searchTerm)
     {

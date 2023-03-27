@@ -1,6 +1,6 @@
 ﻿@inject IClientService clientService
+@inject IUserService userService
 @page "/allClients"
-@using BlazorTestApp.DAL.DbModels
 
 <MessageComponent Message="@messageForPopUp" @ref="messageComponent"></MessageComponent>
 <div class="container-fluid">
@@ -22,7 +22,7 @@
                     <td>@client.Description</td>
                     <td>@client.DateCreate</td>
                     <td>@client.ClientStatus</td>
-                    <td><button class="btn btn-danger" disabled="@client.CannotDeleted" @onclick="(()=>DeleteClient(client.Id))">Delete Client</button></td>
+                    <td><button class="btn btn-danger" disabled="@client.CannotDeleted" @onclick="(()=>DeleteClient(client.Id,currentUser.Name))">Delete Client</button></td>
                 </RowTemplate>
             </TableComponent>
         </div>
@@ -30,26 +30,40 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
     private MessageComponent? messageComponent;
     private string? messageForPopUp;
     private IEnumerable<ClientViewModel> clients = new List<ClientViewModel>();
+    private UserViewModel? currentUser;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await GetCurrentUser();
         clients = clientService.GetAll();
+       
     }
-    private void DeleteClient(int id)
+
+    private void DeleteClient(int idClient, string nameCurrentUser)
     {
-        if (clientService.Delete(id))
+        if (clientService.Delete(idClient,nameCurrentUser))
         {
             messageForPopUp = "Client has been removed";
             messageComponent?.Show();
         }
         else
         {
-           messageForPopUp = "Client can't be deleted. He has ordered.";
-           messageComponent?.Show();  
+            messageForPopUp = "Client can't be deleted. He has ordered.";
+            messageComponent?.Show();
         }
-       
     }
+
+    private async Task GetCurrentUser()
+    {
+        var authState = await authenticationState;
+        var authUserName = authState.User.Identity.Name;
+        currentUser = userService.GetByUserName(authUserName);
+    }
+
 }

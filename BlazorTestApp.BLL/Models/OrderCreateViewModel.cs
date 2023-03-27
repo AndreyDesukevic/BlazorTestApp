@@ -15,5 +15,6 @@ namespace BlazorTestApp.BLL.Models
         public string Description { get; set; }
         [Range(1, 300000, ErrorMessage = "Сost is not valid")]
         public int Cost { get; set; }
+        public string NameUserMadeChangeOrder { get; set; }
     }
 }

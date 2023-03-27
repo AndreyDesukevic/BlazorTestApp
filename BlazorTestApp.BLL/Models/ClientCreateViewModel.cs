@@ -18,6 +18,7 @@ namespace BlazorTestApp.BLL.Models
         [Required]
         [StringLength(100, ErrorMessage = "Description is too long.")]
         public string? Description { get; set; }
+        public string NameUserMadeChange{ get; set; }
 
     }
 }

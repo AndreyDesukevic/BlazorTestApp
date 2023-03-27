@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,6 +46,10 @@ namespace BlazorTestApp.DAL.Repositories
             _webDbContext.Clients.Update(entity);
             _webDbContext.SaveChanges();
             return entity;
+        }
+        public IQueryable<Client> GetHistoryById (int idClient)
+        {
+           return _webDbContext.Clients.TemporalAll().Where(x => x.Id == idClient);
         }
     }
 }

@@ -33,6 +33,8 @@ builder.Services.AddScoped<ISortingOrder,SortingOrder>();
 builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthenticationStateProvider>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<HttpContextAccessor>();
 
 
 
@@ -47,7 +49,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 
 app.UseRouting();

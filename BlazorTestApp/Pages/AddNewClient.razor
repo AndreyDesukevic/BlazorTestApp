@@ -1,27 +1,29 @@
 ﻿@inject IClientService clientService
+@inject IUserService userService
 @page "/addNewClient"
-@attribute [Authorize(Roles = "Administrator") ]
+@attribute [Authorize(Roles = "Administrator,Manager") ]
+
 
 <br />
 <h3>AddNewClient</h3>
 <br />
 <br />
-<EditForm Model="@_client" OnValidSubmit="@HandleValidSubmit">
+<EditForm Model="@client" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <ImputComponent Label="First Name">
         <Control>
-            <input type="text" @bind-value="_client.FirstName" placeholder="First Name" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+            <input type="text" @bind-value="client.FirstName" placeholder="First Name" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
         </Control>
     </ImputComponent>
     <ImputComponent Label="First Name">
         <Control>
-            <input type="text" @bind-value="_client.LastName" placeholder="First Name" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+            <input type="text" @bind-value="client.LastName" placeholder="First Name" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
         </Control>
     </ImputComponent>
     <ImputComponent Label="Description">
         <Control>
-            <input type="text" @bind-value="_client.Description" placeholder="Description" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+            <input type="text" @bind-value="client.Description" placeholder="Description" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
         </Control>
     </ImputComponent>
     <button class="btn btn-success" type="submit">Add</button>
@@ -34,19 +36,34 @@
 
 
 @code {
-    private bool messageIsValid=false;
-    private ClientCreateViewModel? _client;
 
-    protected override void OnInitialized()
+    private bool messageIsValid=false;
+    private ClientCreateViewModel? client;
+    private UserViewModel? currentUser;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
     {
-        _client = new();
+        await GetCurrentUser();
+        client = new();
+    }
+
+    private async Task GetCurrentUser()
+    {
+        var authState = await authenticationState;
+        var authUserName = authState.User.Identity.Name;
+        currentUser = userService.GetByUserName(authUserName);
     }
 
     private void HandleValidSubmit()
     {
-        clientService.Create(_client);
+        client.NameUserMadeChange = currentUser.Name;
+        clientService.Create(client);
         messageIsValid = true;
-        OnInitialized();
+        OnInitializedAsync();
     }
+
    
 }
