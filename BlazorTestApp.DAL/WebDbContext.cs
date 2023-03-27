@@ -27,16 +27,32 @@ namespace BlazorTestApp.DAL
             modelBuilder.Entity<Order>()
              .HasOne(order => order.Client)
              .WithMany(client => client.Orders)
-             .HasForeignKey(order => order.ClientId);
+             .HasForeignKey(order => order.ClientId)
+             .OnDelete(DeleteBehavior.ClientSetNull); ;
+
+            modelBuilder.Entity<Client>()
+             .HasOne(client => client.User)
+             .WithMany(user => user.ChangedClients)
+             .HasForeignKey(client => client.NameUserMadeChange)
+             .HasPrincipalKey(user => user.Name);
+             
+
+            modelBuilder.Entity<Order>()
+             .HasOne(order => order.User)
+             .WithMany(user => user.ChangedOrders)
+             .HasForeignKey(order => order.NameUserMadeChangeOrder)
+             .HasPrincipalKey(user => user.Name)
+             .OnDelete(DeleteBehavior.ClientSetNull);
+
 
             modelBuilder.Entity<User>(builder =>
             {
                 builder.HasData(new User
                 {
                     Id = 1,
-                    Name="admin",
+                    Name = "admin",
                     Password = HashPasswordHelper.HashPassword("123456789"),
-                    Email="admin@admin.com",
+                    Email = "admin@admin.com",
                     Role = UserRole.Administrator,
                     IsBlocked = false
                 });
@@ -44,6 +60,24 @@ namespace BlazorTestApp.DAL
                 builder.Property(x => x.Id).ValueGeneratedOnAdd();
                 builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
             });
+
+            modelBuilder.Entity<Client>()
+                .ToTable("Clients", x =>
+                x.IsTemporal(h =>
+                {
+                     h.HasPeriodStart("CreatedAt");
+                     h.HasPeriodEnd("DeletedAt");
+                     h.UseHistoryTable("ClientDataHistory");
+                 }));
+
+            modelBuilder.Entity<Order>()
+               .ToTable("Orders", x =>
+               x.IsTemporal(h =>
+               {
+                   h.HasPeriodStart("CreatedAt");
+                   h.HasPeriodEnd("DeletedAt");
+                   h.UseHistoryTable("OrderDataHistory");
+               }));
         }
     }
 }

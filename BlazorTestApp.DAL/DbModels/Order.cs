@@ -16,6 +16,8 @@ namespace BlazorTestApp.DAL.DbModels
         public DateTime OrderData { get; set; }
         public int Cost { get; set; }
         public OrderStatus OrderStatus { get; set; }
-       
+        public string NameUserMadeChangeOrder { get; set; }
+        public User User { get; set; }
+
     }
 }

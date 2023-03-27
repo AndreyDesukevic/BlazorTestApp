@@ -27,7 +27,7 @@ namespace BlazorTestApp.BLL.Services.Implementations
                 Name = UserCreateViewModel.Name,
                 Email = UserCreateViewModel.Email,
                 Password = UserCreateViewModel.Password,
-                Role=UserRole.Manager,
+                Role = UserRole.Manager,
                 IsBlocked = false
             };
             _userRepository.Create(dbUser);
@@ -46,11 +46,11 @@ namespace BlazorTestApp.BLL.Services.Implementations
                 .Select(dbUser => new UserViewModel()
                 {
                     Id = dbUser.Id,
-                   Name = dbUser.Name,
-                   Email = dbUser.Email,
-                   Password = dbUser.Password,
-                   Role = dbUser.Role,
-                   IsBlocked = dbUser.IsBlocked
+                    Name = dbUser.Name,
+                    Email = dbUser.Email,
+                    Password = dbUser.Password,
+                    Role = dbUser.Role,
+                    IsBlocked = dbUser.IsBlocked
                 });
             return userViewModels;
         }
@@ -60,9 +60,15 @@ namespace BlazorTestApp.BLL.Services.Implementations
             return GetAll().FirstOrDefault(x => x.Name == UserName);
         }
 
+        public  string GetUserNameById(int userId)
+        {
+            return GetAll().FirstOrDefault(x => x.Id == userId).Name; 
+        }
+
         public void Save(UserViewModel UserViewModel)
         {
             throw new NotImplementedException();
         }
+
     }
 }

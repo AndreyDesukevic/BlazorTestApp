@@ -39,6 +39,11 @@ namespace BlazorTestApp.DAL.Repositories
             return GetAll().FirstOrDefault(x => x.Id == id);
         }
 
+        public IQueryable<Order> GetHistoryById(int idOrder)
+        {
+            return _webDbContext.Orders.TemporalAll().Where(x => x.Id == idOrder);
+        }
+
         public Order Update(Order entity)
         {
             _webDbContext.Orders.Update(entity);

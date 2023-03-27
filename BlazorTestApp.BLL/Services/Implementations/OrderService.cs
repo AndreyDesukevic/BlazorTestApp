@@ -3,9 +3,11 @@ using BlazorTestApp.BLL.Services.Interfaces;
 using BlazorTestApp.DAL.DbModels;
 using BlazorTestApp.DAL.Enum;
 using BlazorTestApp.DAL.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,7 +38,8 @@ namespace BlazorTestApp.BLL.Services.Implementations
                     Cost = dbOrder.Cost,
                     OrderData = dbOrder.OrderData,
                     OrderStatus = dbOrder.OrderStatus,
-                    CannotDeleted=IsCannotDeleted(dbOrder.OrderStatus)
+                    CannotDeleted=IsCannotDeleted(dbOrder.OrderStatus),
+                    NameUserMadeChangeOrder = dbOrder.NameUserMadeChangeOrder,
                 });
             return viewModels;
         }
@@ -51,7 +54,8 @@ namespace BlazorTestApp.BLL.Services.Implementations
                 Description = orderCreateViewModel.Description,
                 OrderData = DateTime.Now,
                 Cost = orderCreateViewModel.Cost,
-                OrderStatus = OrderStatus.New
+                OrderStatus = OrderStatus.New,
+                NameUserMadeChangeOrder=orderCreateViewModel.NameUserMadeChangeOrder
             };
             _orderRepository.Create(dbOrder);
         }
@@ -61,12 +65,14 @@ namespace BlazorTestApp.BLL.Services.Implementations
             var dbOrder = _orderRepository.GetAll().FirstOrDefault(order => order.Id == orderViewModel.Id);
             dbOrder.OrderStatus = orderViewModel.OrderStatus;
             dbOrder.Description = orderViewModel.Description;
+            dbOrder.NameUserMadeChangeOrder= orderViewModel.NameUserMadeChangeOrder;
             _orderRepository.Update(dbOrder);
         }
 
-        public void Delete(int id)
+        public void Delete(int id, string currentUser)
         {
             var order = _orderRepository.GetById(id);
+            order.NameUserMadeChangeOrder= currentUser;
             _orderRepository.Delete(order);
         }
 
@@ -75,6 +81,24 @@ namespace BlazorTestApp.BLL.Services.Implementations
         public IEnumerable<OrderViewModel> GetListOrdersById(List<int> ids) => GetAll().Where(order => ids.Contains(order.Id));
 
         private static bool IsCannotDeleted(OrderStatus orderStatus) => orderStatus == OrderStatus.Done;
-        
+
+        public List<HistoryOrderViewModel> GetHistoryOrder(int idOrder)
+        {
+            var dbHistoriesOrder = _orderRepository.GetHistoryById(idOrder);
+            var historyOrderViewMidel = new List<HistoryOrderViewModel>();
+            if (dbHistoriesOrder != null)
+            {
+                historyOrderViewMidel = dbHistoriesOrder
+                               .Select(dbHistoryOrder => new HistoryOrderViewModel()
+                               {
+                                   Description = dbHistoryOrder.Description,
+                                   OrderStatus = dbHistoryOrder.OrderStatus,
+                                   DateOfChange = EF.Property<DateTime>(dbHistoryOrder, "CreatedAt"),
+                                   UserName = dbHistoryOrder.NameUserMadeChangeOrder,
+                               }).OrderBy(x => x.DateOfChange).ToList();
+                return historyOrderViewMidel;
+            }
+            return historyOrderViewMidel.ToList();
+        }
     }
 }

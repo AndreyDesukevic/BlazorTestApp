@@ -12,9 +12,10 @@ namespace BlazorTestApp.BLL.Services.Interfaces
     {
         IEnumerable<OrderViewModel> GetAll();
         OrderViewModel GetById(int id);
-        void Delete(int id);
+        void Delete(int idOrder, string currentUser);
         void Create(OrderCreateViewModel orderCreateViewModel);
         void Save(OrderViewModel orderViewModel);
         IEnumerable<OrderViewModel> GetListOrdersById(List<int> ids);
+        List<HistoryOrderViewModel> GetHistoryOrder(int idOrder);
     }
 }

@@ -1,5 +1,7 @@
 ﻿@page "/order/{orderId:int}"
 @inject IOrderService orderService
+@inject IUserService userService
+@attribute [Authorize(Roles = "Administrator,Manager")]
 
 
 <div class="container-fluid">
@@ -47,19 +49,65 @@
     <div class="row p-1 border-top">
         <h3>Cost: @order.Cost.ToString("C0",CultureInfo.CreateSpecificCulture("en-US"))</h3>
     </div>
+    @if (historyOrder.Count() > 0 || historyOrder != null)
+    {
+        <div>
+            <button @onclick="(()=>ShowHistoryOfChange())" class="btn btn-primary" type="button">
+                History of changes
+            </button>
+            <div hidden="@isShowHistoryOfChanges" class="p-3">
+                <TableComponent Items="historyOrder" Context="change">
+                    <TableHeader>
+                        <th>Date of change</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>User Name</th>
+                    </TableHeader>
+                    <RowTemplate>
+                        <td>@change.DateOfChange</td>
+                        <td>@change.Description</td>
+                        <td>@change.OrderStatus</td>
+                        <td>@change.UserName</td>
+                    </RowTemplate>
+                </TableComponent>
+            </div>
+        </div>
+    }
 </div>
 
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
     [Parameter]
     public int OrderId { get; set; }
+    private List<HistoryOrderViewModel>? historyOrder;
+    private UserViewModel? currentUser;
     private OrderViewModel order;
-    protected override void OnInitialized()
+    private bool isShowHistoryOfChanges { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
     {
+        await GetCurrentUser();
         order = orderService.GetById(OrderId);
+        historyOrder = orderService.GetHistoryOrder(order.Id);
     }
     private void ChangeDescriptionAndStatusOrder()
     {
+        order.NameUserMadeChangeOrder = currentUser.Name;
         orderService.Save(order);
+        OnInitializedAsync();
+    }
+
+    private async Task GetCurrentUser()
+    {
+        var authState = await authenticationState;
+        var authUserName = authState.User.Identity.Name;
+        currentUser = userService.GetByUserName(authUserName);
+    }
+
+    private void ShowHistoryOfChange()
+    {
+        isShowHistoryOfChanges = !isShowHistoryOfChanges;
     }
 }

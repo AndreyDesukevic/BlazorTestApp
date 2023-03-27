@@ -17,6 +17,7 @@ namespace BlazorTestApp.BLL.Models
         public DateTime? DateCreate { get; set; }
         public bool CannotBeNotActive { get; set; }
         public bool CannotDeleted { get; set; }
+        public string NameUserMadeChange { get; set; }
 
     }
 }

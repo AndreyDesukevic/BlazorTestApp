@@ -1,6 +1,8 @@
 ﻿@page "/client/{clientId:int}"
 @inject IOrderService orderService
 @inject IClientService clientService
+@inject IUserService userService
+@attribute [Authorize(Roles = "Administrator,Manager")]
 
 @using BlazorTestApp.DAL.DbModels;
 <div class="container-fluid">
@@ -41,6 +43,30 @@
         </div>
     </EditForm>
     <br />
+    @if (historyClient.Count()>0||historyClient!=null)
+    {
+        <div>
+            <button @onclick="(()=>ShowHistoryOfChange())" class="btn btn-primary" type="button">
+                History of changes
+            </button>
+            <div hidden="@isShowHistoryOfChanges" class="p-3">
+                <TableComponent Items="historyClient" Context="change">
+                    <TableHeader>
+                        <th>Date of change</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>User Name</th>
+                    </TableHeader>
+                    <RowTemplate>
+                        <td>@change.DateOfChange</td>
+                        <td>@change.Description</td>
+                        <td>@change.ClientStatus</td>
+                        <td>@change.UserName</td>
+                    </RowTemplate>
+                </TableComponent>
+            </div>
+        </div>
+    }
     @if (client.ClientStatus == ClientStatus.Active)
     {
         <div class="row border rounded">
@@ -85,7 +111,7 @@
                             <td>@order.OrderData</td>
                             <td>@order.OrderStatus</td>
                             <td>@order.Cost.ToString("C0",CultureInfo.CreateSpecificCulture("en-US"))</td>
-                            <td><button class="btn btn-danger" disabled="@order.CannotDeleted" @onclick="(()=>DeleteOrder(order.Id))">Delete</button></td>
+                            <td><button class="btn btn-danger" disabled="@order.CannotDeleted" @onclick="(()=>DeleteOrder(order.Id,currentUser.Name))">Delete</button></td>
                         </RowTemplate>
                     </TableComponent>
                 </div>
@@ -108,31 +134,58 @@
 
 
 @code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
     [Parameter]
     public int ClientId { get; set; }
-    private ClientViewModel client;
-    private IEnumerable<OrderViewModel> orders;
-    private OrderCreateViewModel orderCreate;
 
-    protected override void OnInitialized()
+    private ClientViewModel? client;
+    private List<HistoryClientViewModel>? historyClient;
+    private IEnumerable<OrderViewModel>? orders;
+    private OrderCreateViewModel? orderCreate;
+    private UserViewModel? currentUser;
+    private bool isShowHistoryOfChanges { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
     {
-        orderCreate = new OrderCreateViewModel();
+        await GetCurrentUser();
         client = clientService.GetById(ClientId);
+        orderCreate = new OrderCreateViewModel();
         orders = orderService.GetListOrdersById(client.OrdersId);
+        historyClient = clientService.GetHistoryClient(client.Id);
     }
-    private void DeleteOrder(int id)
+
+    private async Task GetCurrentUser()
     {
-        orderService.Delete(id);
+        var authState = await authenticationState;
+        var authUserName = authState.User.Identity.Name;
+        currentUser = userService.GetByUserName(authUserName);
     }
-    private void CreateOrder()
+
+    private void DeleteOrder(int idOrder,string currentUserName)
     {
-        orderCreate.ClientId = ClientId;
+        orderService.Delete(idOrder,currentUserName);
+    }
+
+    private async Task CreateOrder()
+    {
+        orderCreate.ClientId = client.Id;
+        orderCreate.NameUserMadeChangeOrder = currentUser.Name;
         orderService.Create(orderCreate);
-        OnInitialized();
+        await OnInitializedAsync();
     }
+
     private void ChangeDescriptionAndStatusClient()
     {
+        client.NameUserMadeChange = currentUser.Name;
         clientService.Save(client);
+        OnInitializedAsync();
     }
 
+    private void ShowHistoryOfChange()
+    {
+        isShowHistoryOfChanges = !isShowHistoryOfChanges;
+    }
 }

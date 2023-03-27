@@ -39,6 +39,11 @@ namespace BlazorTestApp.DAL.Repositories
             return GetAll().FirstOrDefault(x => x.Id == id);
         }
 
+        public IQueryable<User> GetHistoryById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public User Update(User entity)
         {
             _webDbContext.Users.Update(entity);
