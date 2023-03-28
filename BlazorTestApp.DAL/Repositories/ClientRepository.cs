@@ -31,7 +31,7 @@ namespace BlazorTestApp.DAL.Repositories
             _webDbContext.SaveChanges();
         }
 
-        public IQueryable<Client> GetAll()
+        public IEnumerable<Client> GetAll()
         {
             return _webDbContext.Clients.Include(x => x.Orders);
         }

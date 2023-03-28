@@ -29,7 +29,7 @@ namespace BlazorTestApp.DAL.Repositories
             _webDbContext.SaveChanges();
         }
 
-        public IQueryable<User> GetAll()
+        public IEnumerable<User> GetAll()
         {
             return _webDbContext.Users;
         }

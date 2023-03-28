@@ -10,7 +10,7 @@ namespace BlazorTestApp.DAL.Repositories
     public interface IBaseRepository<T>
     {
         void Create(T entity);
-        IQueryable<T> GetAll();
+        IEnumerable<T> GetAll();
         void Delete(T entity);
         T Update(T entity);
         T GetById(int id);
